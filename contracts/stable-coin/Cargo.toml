@@ -11,7 +11,7 @@ scale = { package = "parity-scale-codec", version = "3", default-features = fals
 scale-info = { version = "2.6", default-features = false, features = ["derive"], optional = true }
 dia-oracle-getter = { path = "../oracle_contracts/oracle-getter", default-features = false }
 # These dependencies
-openbrush = { path = "../../..", default-features = false, features = ["ownable", "psp22"] }
+openbrush = { tag = "v4.0.0-beta", git = "https://github.com/Brushfam/openbrush-contracts", default-features = false, features = ["ownable", "psp22"] }
 
 [dev-dependencies]
 dia-oracle = { path = "../oracle_contracts/oracle", default-features = false }
