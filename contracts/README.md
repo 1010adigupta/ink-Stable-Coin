@@ -5,7 +5,7 @@
 ## Description
 A crypto collaterised stable coin implementation written in ink!, for ALEPH ZERO and Substrate based parachains.
 ## Architecture
-![Logo](architecture.png)
+![architecture](architecture.jpg)
 ## Deployment
 
 Clone the project
