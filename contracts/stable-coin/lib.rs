@@ -17,6 +17,7 @@ pub mod token {
         psp22: psp22::Data,
         #[storage_field]
         ownable: ownable::Data,
+        /// Metadata of Stable Coin Token
         #[storage_field]
         metadata: metadata::Data,
         /// Mapping of user address to total collateral deposited amount
@@ -53,22 +54,21 @@ pub mod token {
         burned_stable_coin_amount: Balance,
     }
 
-    /// Specify ERC-20 error type.
+    /// StableCoin Errors
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum Error {
-        ///Health Factor is broken
+        /// Health Factor is broken
         BadHealthFactor,
-        ///Health Factor is ok
+        /// Health Factor is ok
         HealthFactorOk,
         /// Health Factor is not improved
         HealthFactorNotImproved,
     }
 
-    /// Specify the ERC-20 result type.
-    // pub type Result<T> = core::result::Result<T, Error>;
     impl StableCoinContract {
-        /// constructor with name and symbol
+        
+        /// Constructor is initialized with Stable Coin Metadata
         #[ink(constructor)]
         pub fn new(oracle_address: AccountId) -> Self {
             let caller = Self::env().caller();
@@ -90,6 +90,7 @@ pub mod token {
             instance
         }
 
+        /// pub function to deposit collateral and mint stable coin to the caller
         #[ink(message, payable)]
         pub fn deposit_collateral_and_mint_stable_coin(&mut self) {
             let caller = self.env().caller();
@@ -109,6 +110,7 @@ pub mod token {
             self.collateral_balance_of_user.insert(&caller, &amount);
         }
 
+        /// pub function to get amount of stable coin from collateral deposited
         #[ink(message)]
         pub fn get_stable_coin_amount_from_collateral(&self, amount: Balance) -> Balance {
             let collateral_price = self.get_price_feed(String::from("AZERO/USD"));
@@ -117,6 +119,7 @@ pub mod token {
             stable_coin_amount
         }
 
+        /// pub function to redeem collateral and burn stable coin from the caller
         #[ink(message, payable)]
         pub fn redeem_collateral_for_stable_coin(&mut self) -> Result<(), Error> {
             let caller = self.env().caller();
@@ -124,20 +127,20 @@ pub mod token {
             if self.calculate_health_factor(caller) < 1 {
                 return Err(Error::BadHealthFactor);
             }
-                self.burn(caller, amount);
-                self._redeem_collateral(caller, amount);
-                if self.calculate_health_factor(caller) < 1 {
-                    return Err(Error::BadHealthFactor);
-                } else {
-                    self.env().emit_event(CollateralRedeemedAndStableCoinBurned {
-                        to: Some(caller),
-                        amount,
-                    });
-                    return Ok(());
-                }
-            
+            self.burn(caller, amount);
+            self._redeem_collateral(caller, amount);
+            if self.calculate_health_factor(caller) < 1 {
+                return Err(Error::BadHealthFactor);
+            } else {
+                self.env().emit_event(CollateralRedeemedAndStableCoinBurned {
+                    to: Some(caller),
+                    amount,
+                });
+                return Ok(());
+            }
         }
 
+        /// pub function to calculate health factor of an user, health factor is calculated as ration of collateral amount to stable coin amount, with LIQUIDATION_THRESHOLD as 2, which allows stable coin to be 200% collateralized
         #[ink(message)]
         pub fn calculate_health_factor(&mut self, user: AccountId) -> u128 {
             let user_collateral_balance = self.collateral_balance_of(user);
@@ -154,6 +157,7 @@ pub mod token {
             health_factor
         }
 
+        ///pub function to liquidate an user, anyone can call this function to liquidate an user, if health factor of an user is less than 1, then user can be liquidated. 10% bonus collateral is given to the liquidator as a reward from over collaterized token
         #[ink(message, payable)]
         pub fn liquidate(&mut self, user: AccountId) -> Result<(), Error> {
             let collateral_amount = Self::env().transferred_value();
@@ -186,6 +190,7 @@ pub mod token {
             Ok(())
         }
 
+        /// pub function to get user information, returns user collateral balance, stable coin balance and health factor
         #[ink(message)]
         pub fn get_user_information(&mut self) -> (Balance, Balance, u128) {
             let caller = self.env().caller();
@@ -195,6 +200,42 @@ pub mod token {
             (user_collateral_balance, user_stable_coin_balance, user_health_factor)
         }
 
+        /// Returns the stable coin balance for the specified `user`.
+        #[ink(message)]
+        pub fn stable_coin_balance_of(&mut self, user: AccountId) -> Balance {
+            let balance = psp22::Internal::_balance_of(self, &user);
+            balance
+        }
+
+        /// Returns the latest price of collateral token in USD by accessing DIA oracles on-chain.
+        #[ink(message)]
+        pub fn get_price_feed(&self, key: String) -> Option<u128> {
+            let core::prelude::v1::Some((feed_time, price_feed)) =
+                self.oracle.get_latest_price(key) else {
+                return None;
+            };
+            Some(price_feed)
+        }
+
+        /// Returns the collateral balance for the specified `user`.
+        #[ink(message)]
+        pub fn collateral_balance_of(&self, user: AccountId) -> Balance {
+            self.collateral_balance_of_user.get(&user).unwrap_or_default()
+        }
+
+        /// Returns the contract balance.
+        #[ink(message)]
+        pub fn contract_balance(&self) -> Balance {
+            Self::env().balance()
+        }
+
+        /// Returns the contract address.
+        #[ink(message)]
+        pub fn get_contract_address(&self) -> AccountId {
+            Self::env().account_id()
+        }
+
+        /// Internal Functions
         fn _set_health_factor(&mut self, user: AccountId, health_factor: u128) {
             self.health_factor.insert(&user, &health_factor);
         }
@@ -205,36 +246,6 @@ pub mod token {
 
         pub fn burn(&mut self, from: AccountId, value: Balance) {
             psp22::Internal::_burn_from(self, from, value);
-        }
-
-        #[ink(message)]
-        pub fn stable_coin_balance_of(&mut self, user: AccountId) -> Balance {
-            let balance = psp22::Internal::_balance_of(self, &user);
-            balance
-        }
-        #[ink(message)]
-        pub fn get_price_feed(&self, key: String) -> Option<u128> {
-            let core::prelude::v1::Some((feed_time, price_feed)) =
-                self.oracle.get_latest_price(key) else {
-                return None;
-            };
-            Some(price_feed)
-        }
-
-        /// Returns the account balance for the specified `owner`.
-        #[ink(message)]
-        pub fn collateral_balance_of(&self, user: AccountId) -> Balance {
-            self.collateral_balance_of_user.get(&user).unwrap_or_default()
-        }
-
-        #[ink(message)]
-        pub fn contract_balance(&self) -> Balance {
-            Self::env().balance()
-        }
-
-        #[ink(message)]
-        pub fn get_contract_address(&self) -> AccountId {
-            Self::env().account_id()
         }
 
         fn _deposit_collateral(&mut self, to: AccountId, amount: Balance) {
