@@ -1,11 +1,13 @@
 
-![Logo](https://github.com/1010adigupta/ink-Stable-Coin/blob/master/contracts/readme-images/iusd.png)
+
+![iusd](https://github.com/1010adigupta/ink-Stable-Coin/assets/121158631/773705e3-96c5-485e-b2e9-5634795940c1)
 
 
 ## Description
 A crypto collaterised stable coin implementation written in ink!, for ALEPH ZERO and Substrate based parachains.
 ## Architecture
-![Logo](https://github.com/1010adigupta/ink-Stable-Coin/blob/master/contracts/readme-images/architecture.png)
+![architecture](https://github.com/1010adigupta/ink-Stable-Coin/assets/121158631/2d66d4b3-4f86-43aa-8177-af10ccbb445d)
+
 ## Deployment
 
 Clone the project
