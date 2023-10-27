@@ -46,6 +46,12 @@ The iUSD operates with the following key components and responsibilities:
 
 This architecture ensures the stable coin's value is maintained by tracking collateral values, protecting users from under-collateralization, and providing incentives for maintaining system health. Users can confidently interact with the stable coin system, knowing that it is designed to operate in a secure and sustainable manner.
 
+## SetUp
+
+Make sure you have installed all of the following prerequisites on your development machine:
+- [Rust and Cargo]((https://doc.rust-lang.org/cargo/getting-started/installation.html))
+- [cargo-contract](https://github.com/paritytech/cargo-contract#installation), a CLI tool for helping setting up and managing WebAssembly smart contracts written with ink!
+
 ## Deployment
 
 To deploy this contract, follow these steps:
