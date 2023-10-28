@@ -127,7 +127,9 @@ pub mod token {
             if self.calculate_health_factor(caller) < 1 {
                 return Err(Error::BadHealthFactor);
             }
-            self.burn(caller, amount);
+            let stable_coin = self.get_stable_coin_amount_from_collateral(amount);
+            let stable_coin_to_burn = stable_coin/2;
+            self.burn(caller,stable_coin_to_burn);
             self._redeem_collateral(caller, amount);
             if self.calculate_health_factor(caller) < 1 {
                 return Err(Error::BadHealthFactor);
@@ -162,7 +164,7 @@ pub mod token {
         pub fn liquidate(&mut self, user: AccountId) -> Result<(), Error> {
             let collateral_amount = Self::env().transferred_value();
             let stable_coin_to_burn =
-                self.get_stable_coin_amount_from_collateral(collateral_amount);
+                (self.get_stable_coin_amount_from_collateral(collateral_amount))/2;
             let caller = self.env().caller();
             let starting_user_health_factor = self.calculate_health_factor(user);
             if starting_user_health_factor > 1 {
