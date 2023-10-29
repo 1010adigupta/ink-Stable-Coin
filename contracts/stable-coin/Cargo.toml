@@ -28,7 +28,7 @@ std = [
     "scale-info/std",
     # These dependencies
     "openbrush/std",
-    "dia-oracle-getter/std"
+    "dia-oracle-getter/std",
 ]
 ink-as-dependency = []
 
