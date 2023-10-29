@@ -96,3 +96,4 @@ Our roadmap includes the following milestones:
 
 - **Add More Integrations**: We are actively working on integrating our stable coin with various DeFi projects and platforms to enhance its usability.
 - **Add ink! e-2-e tests**: Next step is to add ink! e-2-e tests, currenltly all funcitons have been tested by deploying contract on substrate-contracts-ui and testing every functions there.
+- **Add security measures**: We will be adding, reentrancy, ownable and access control security measures which are not implemented yet to make our protocol more secure.
