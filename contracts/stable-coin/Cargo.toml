@@ -12,7 +12,7 @@ scale-info = { version = "2.6", default-features = false, features = ["derive"],
 dia-oracle-getter = { path = "../oracle-contracts/oracle-getter", default-features = false }
 # These dependencies
 openbrush = { tag = "v4.0.0-beta", git = "https://github.com/Brushfam/openbrush-contracts", default-features = false, features = ["ownable", "psp22"] }
-
+drink = { version = "0.6" }
 [dev-dependencies]
 dia-oracle = { path = "../oracle-contracts/oracle", default-features = false }
 dia-oracle-setter = { path = "../oracle-contracts/oracle-setter", default-features = false }
