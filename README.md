@@ -95,3 +95,4 @@ Our roadmap includes the following milestones:
 - **AZERO Staking**: Since our stable coin is over collaterized, we can divert a particular amount of AZERO collateral in our contract to the AZERO staking feature on ALEPH ZERO chain, this will enable efficient usage of stored collateral and generate revenue from the same.
 
 - **Add More Integrations**: We are actively working on integrating our stable coin with various DeFi projects and platforms to enhance its usability.
+- **Add ink! e-2-e tests**: Next step is to add ink! e-2-e tests, currenltly all funcitons have been tested by deploying contract on substrate-contracts-ui and testing every functions there.
